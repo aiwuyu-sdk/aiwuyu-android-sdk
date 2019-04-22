@@ -20,7 +20,7 @@
 ## 三.  API
 #### 1. 入口类 AwySDK
 
-###### 1. 初始化方法
+###### 1.1 初始化方法
 ```java
 initialize(Application app, String channelCode, AwyDelegate delegate)
 ```
@@ -33,7 +33,7 @@ channelCode	|渠道身份标识		|无
 delegate	|用于SDK与渠道APP交互的接口实例		|详细定义见下文AwyDelegate定义
 
 
-###### 2. 使用sdk打开h5链接
+###### 1.2 使用sdk打开h5链接
 
 ```java
 openUrl(Activity activity, String url)
@@ -45,7 +45,7 @@ openUrl(Activity activity, String url)
 activity	|启动h5页面的context	|无
 url	|需要打开的h5 url		|无
 
-###### 3. 获取bitmap对象
+###### 1.3 获取bitmap对象
 
 ```java
 getBitmapFromUrl(String imageUrl, final BitmapListener listener)
@@ -64,7 +64,7 @@ listener	|当bitmap load成功后的回掉		|详细定义见下文
 
 #### 2. SDK回掉渠道app接口 AwyDelegate
 
-###### 1. 请求联合登录参数
+###### 2.1 请求联合登录参数
 
 ```java
 boolean requestAuth(AuthCallback callback);
@@ -81,7 +81,7 @@ callback	|渠道app获取到联合登录参数后，使用此回调将联合登�
 返回值	|true表示本渠道支持联合登录，false表示不支持联合登录	|无
 
 
-###### 2. 请求分享
+###### 2.2 请求分享
 
 ```java
 boolean requestShare(ShareData shareData);
@@ -99,7 +99,7 @@ shareData	|分享参数，包括分享标题、内容、链接、图片等信息
 
 #### 3. 获取到联合登录参数后回调sdk接口  AuthCallback
 
-###### 1. 联合登录参数回调
+###### 3.1 联合登录参数回调
 
 ```java
 void onObtainAuthInfo(String authInfo);
@@ -116,7 +116,7 @@ authInfo	|渠道方通过爱物语server sdk获得的联合登录参数，	|如�
 
 #### 4. 加载图片bitmap回调接口  BitmapListener
 
-###### 1. 加载成功回调
+###### 4.1 加载成功回调
 
 ```java
 void onResult(Bitmap bitmap);
@@ -127,7 +127,7 @@ sdk加载到图片bitmap使用此方法回调
 :--		|:--											|:--
 bitmap	|加载成功的bitmap对象	|无
 
-###### 2. 加载失败回调
+###### 4.2 加载失败回调
 
 ```java
 void onError();
