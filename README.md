@@ -15,7 +15,101 @@
     ```
     -keep class com.aiwuyu.awylibrary.** { *; }
     ```
+* 初始化SDK
+    在使用SDK功能前需要初始化SDK，方法如下(demo)：
+    ```java
+    AwySDK.initialize(this, "awy-app", new AwyDelegate() {
 
+            @Override
+            public boolean isAppAuth() {
+                return isUserLogin();  //返回App是否登录
+            }
+
+            @Override
+            public void requestAuth(Context activity) {
+                //请求用户登录，请调用起App登录界面
+                //FFUserAuthManager.getInstance().startAuth(activity);
+            }
+
+            @Override
+            public void requestUnionAuthInfo(final AuthCallback authCallback) {
+                //需要接入方实现后台接口，获取联合登录加密信息，并通过authCallback调用将联合登录信息返回给SDK，如果获取失败，返回null即可
+                //下面的接口调用是demo，请接入方自己实现接口向接入方后台获取联合登录加密信息
+                FFSDKAuthProto proto = new FFSDKAuthProto(new IRequestListener<String>() {
+                    @Override
+                    public void onSuccess(String code, String message, String response, boolean isCache) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String authInfo = jsonObject.optString("channelReq", "");
+                            if (!TextUtils.isEmpty(authInfo)) {
+                                //请求成功，返回SDK加密信息
+                                authCallback.onObtainAuthInfo(authInfo);
+                                return;
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        //如果获取失败，返回null
+                        authCallback.onObtainAuthInfo(null);
+                    }
+
+                    @Override
+                    public boolean onFailure(String errorCode, String errorMsg, boolean cancel) {
+                        //如果获取失败，返回null
+                        authCallback.onObtainAuthInfo(null);
+                        return false;
+                    }
+                });
+                proto.send();
+            }
+
+            @Override
+            public void requestShare(Context context, ShareData shareData) {
+                //请求分享，接入方app调用分享功能，比如弹出分享框,让用户选择分享
+                //下面是demo示例代码，需要接入方自己实现分享调用
+                FFShareTool shareTool = new FFShareTool(context, shareData);
+                shareTool.showDialog();
+            }
+        });
+    ```
+* SDK功能配置
+    SDK的一些功能可以通过配置来开启或关闭，方法如下(demo)：
+    ```java
+    AwySDK.setConfig(new AwySDKConfig() {
+            @Override
+            public boolean logEnable() {
+                //是否打印log，正式生产环境请不要打印log
+                return true;
+            }
+
+            @Override
+            public boolean isEnvironmentDebug() {
+                //SDK提供了两套环境，生产环境和测试环境，集成测试可以在测试环境中完成，正式发布需用生产环境
+                //返回true为测试环境，false为生产环境
+                return false;
+            }
+
+            @Override
+            public boolean enableContentShare() {
+                //是否支持调用接入方App分享功能
+                return true;
+            }
+
+            @Override
+            public boolean enableUnionAuth() {
+                //是否支持通过接入方App实现联合登录，如果不支持，集成的爱物语H5将启用自己的登录
+                return true;
+            }
+
+            @Override
+            public boolean enableCallAuthInterface() {
+                //是否支持调用接入方App的登录，如果不支持，在接入方App未登录的情况下，集成的爱物语H5将启用自己的登录
+                return true;
+            }
+        });
+
+    ```
 
 ## 三.  API
 #### 1. 入口类 AwySDK
