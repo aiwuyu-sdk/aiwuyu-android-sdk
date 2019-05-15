@@ -18,7 +18,7 @@
 * 初始化SDK    
     在使用SDK功能前需要初始化SDK，方法如下(demo)：
     ```java
-    AwySDK.initialize(this, "awy-app", new AwyDelegate() {
+    AwySDK.initialize(this, "your-channelCode", new AwyDelegate() {
 
             @Override
             public boolean isAppAuth() {
@@ -132,7 +132,17 @@ channelCode	|渠道身份标识		|无
 delegate	|用于SDK与渠道APP交互的接口实例		|详细定义见下文AwyDelegate定义
 
 
-###### 1.2 使用sdk打开h5链接
+###### 1.2 设置配置方法
+```java
+void setConfig(AwySDKConfig config)
+```
+配置SDK功能
+
+参数		|描述											|备注
+:--		|:--											|:--
+config	|配置接口对象	|详细定义见下文AwySDKConfig定义
+
+###### 1.3 使用sdk打开h5链接
 
 ```java
 openUrl(Activity activity, String url)
@@ -144,7 +154,7 @@ openUrl(Activity activity, String url)
 activity	|启动h5页面的context	|无
 url	|需要打开的h5 url		|无
 
-###### 1.3 获取bitmap对象
+###### 1.4 获取bitmap对象
 
 ```java
 getBitmapFromUrl(String imageUrl, final BitmapListener listener)
@@ -159,40 +169,42 @@ imageUrl	|需要转化成bitmap的图片链接	|无
 listener	|当bitmap load成功后的回掉		|详细定义见下文
 
 
-
-
 #### 2. SDK回掉渠道app接口 AwyDelegate
 
 ###### 2.1 请求联合登录参数
 
 ```java
-boolean requestAuth(AuthCallback callback);
+boolean isAppAuth();
 ```
-sdk向渠道app请求联合登录参数
+渠道App是否登录
 
-渠道方需要使用爱物语server sdk生成联合登录参数，
+```java
+void requestAuth(Context activity)
+```
+SDK向渠道App请求登录，渠道App应该打开登录页面让用户登录
 
-并通过callback异步传递给爱物语sdk
+```java
+void requestUnionAuthInfo(AuthCallback authCallback);
+```
+sdk向渠道app请求联合登录参数  
+渠道方需要使用爱物语server sdk生成联合登录参数，  
+并通过authCallback异步传递给爱物语sdk
 
 参数		|描述											|备注
 :--		|:--											|:--
-callback	|渠道app获取到联合登录参数后，使用此回调将联合登录参数传递给sdk	|详细定义见下文
-返回值	|true表示本渠道支持联合登录，false表示不支持联合登录	|无
+authCallback	|渠道app获取到联合登录参数后，使用此回调将联合登录参数传递给sdk	|详细定义见下文
 
 
 ###### 2.2 请求分享
 
 ```java
-boolean requestShare(ShareData shareData);
+void requestShare(ShareData shareData);
 ```
 sdk向渠道app请求分享	
 
 参数		|描述											|备注
 :--		|:--											|:--
 shareData	|分享参数，包括分享标题、内容、链接、图片等信息	|详细定义见下文
-返回值	|true表示支持通过渠道app分享内容，false表示不支持分享内容	|无
-
-
 
 
 
@@ -246,17 +258,27 @@ imageUrl	|分享图标url	|无
 
 上述参数均可以使用对应的getter/setter方法操作
 
+#### 6. SDK配置接口  AwySDKConfig
+
+方法		|描述											|备注
+:--		|:--											|:--
+boolean logEnable()	|是否支持答应log	|请不要再正式发布环境打印log
+boolean isEnvironmentDebug()	|渠道配置	|返回true为测试环境，false为生产环境
+boolean enableUnionAuth()	|是否支持联合登录	|无
+boolean enableCallAuthInterface()	|知否支持SDK调用渠道App登录页面	|无
+
 
 
 ## 四. 联合登录整体流程
+* 爱物语sdk判断渠道App是否登录，如果未登录调用渠道App登录页面
 
-* 爱物语sdk向渠道app请求联合登录参数
+* 当渠道App登录后，爱物语sdk向渠道app请求联合登录参数
 
-* 如果渠道app是已经登录状态，渠道app向渠道后台请求联合登录参数，如果未登录直接回调sdk null即可
+* 渠道app向渠道后台请求联合登录参数
 
 * 渠道后台收到联合登录请求后，调用爱物语server sdk生成联合登录参数，并下发给渠道app
 
-* 渠道app再将参数通过接口回调，传递给sdk
+* 渠道app再将参数通过接口回调，传递给sdk，如果获取失败，返回给sdk空
 
 * sdk使用联合登录参数请求爱物语平台登录
 
