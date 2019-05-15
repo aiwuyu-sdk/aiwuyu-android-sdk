@@ -3,19 +3,19 @@
 爱物语Web SDK是针对爱物语h5页面交互开发的一套工具，提供webview功能、渠道用户联合登录到爱物语平台、通过渠道app分享等功能。
 
 ## 二. 接入指南
-* 获取channelCode
+* 获取channelCode    
     爱物语平台会为每个接入渠道提供一个channelCode，用于标识渠道身份。请联系爱物语平台获取。
-* 集成方式
+* 集成方式    
     android sdk已经发不到jcenter上，集成只需要在相应的module中的build.gradle引入即可：
     ```groovy
     implementation 'com.aiwuyu.awylibrary:awyweb:+'
     ```
-* 混淆
+* 混淆    
     如果您的项目使用了proguard混淆机制，请在混淆中keep爱物语sdk相关代码：
     ```
     -keep class com.aiwuyu.awylibrary.** { *; }
     ```
-* 初始化SDK
+* 初始化SDK    
     在使用SDK功能前需要初始化SDK，方法如下(demo)：
     ```java
     AwySDK.initialize(this, "awy-app", new AwyDelegate() {
@@ -73,7 +73,7 @@
             }
         });
     ```
-* SDK功能配置
+* SDK功能配置    
     SDK的一些功能可以通过配置来开启或关闭，方法如下(demo)：
     ```java
     AwySDK.setConfig(new AwySDKConfig() {
@@ -109,6 +109,11 @@
             }
         });
 
+    ```
+* 打开爱物语H5    
+    使用SDK的方法打开爱物语H5页面
+    ```java
+    AwySDK.openUrl(this, webUrl);
     ```
 
 ## 三.  API
